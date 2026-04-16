@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peddler's Cafe | Experience the Vibe</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500&family=Pinyon+Script&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VISUAL VIBE SETTINGS --- */
+        :root {
+            --cream: #FEF9F3;
+            --teal: #0F4C5C;
+            --terracotta: #C87941;
+            --mustard: #E9C46A;
+            --text-dark: #1A1A1A;
+            --text-light: #FDFDFD;
+            
+            --font-accent: 'Pinyon Script', cursive;
+            --font-heading: 'Cormorant Garamond', serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--cream);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            line-height: 1.8;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- BUTTERY SCROLL ANIMATIONS --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- FLOWING NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: background 0.4s ease, padding 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(254, 249, 243, 0.98);
+            padding: 0.8rem 5%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+            z-index: 1001;
+        }
+
+        .logo img {
+            max-height: 50px;
+            width: auto;
+            display: block;
+            transition: max-height 0.4s ease;
+        }
+
+        nav.scrolled .logo img {
+            max-height: 40px;
+        }
+
+        .logo:hover {
+            transform: scale(1.05) rotate(-2deg);
+        }
+
+        /* Desktop Links */
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-light);
+            font-family: var(--font-body);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-size: 0.85rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        nav.scrolled .nav-links a {
+            color: var(--text-dark);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--terracotta);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* Hamburger Menu Icon (Mobile) */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 30px;
+            height: 2px;
+            background-color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled .menu-toggle span {
+            background-color: var(--text-dark);
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+            background-color: var(--text-dark);
+        }
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .menu-toggle.active span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+            background-color: var(--text-dark);
+        }
+
+        /* Mobile Menu Overlay */
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: var(--cream);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            z-index: 1000;
+        }
+
+        .mobile-nav.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .mobile-nav a {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            color: var(--teal);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .mobile-nav a:hover {
+            color: var(--terracotta);
+        }
+
+        /* --- IMMERSIVE HERO WITH VIDEO --- */
+        .hero {
+            height: 100vh;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: -10%;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            z-index: -1;
+            will-change: transform;
+        }
+
+        .hero-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .hero-overlay {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: linear-gradient(rgba(15, 76, 92, 0.4), rgba(44, 30, 22, 0.8));
+            z-index: 2;
+        }
+
+        .hero-text {
+            text-align: center;
+            color: var(--text-light);
+            margin-top: 2rem;
+            padding: 0 5%;
+            z-index: 3;
+        }
+
+        .hero-text h1 {
+            font-family: var(--font-heading);
+            font-size: clamp(3rem, 8vw, 5.5rem);
+            font-weight: 400;
+            letter-spacing: 2px;
+            margin-bottom: 0.2rem;
+            line-height: 1.1;
+        }
+
+        .hero-text .accent {
+            font-family: var(--font-accent);
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            color: var(--mustard);
+            display: block;
+            margin-bottom: 2.5rem;
+        }
+
+        .hero-btn {
+            display: inline-block;
+            padding: 0.9rem 2.2rem;
+            margin: 0.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-family: var(--font-body);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.4s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background-color: var(--terracotta);
+            color: var(--text-light);
+            border: 2px solid var(--terracotta);
+            animation: pulse-glow 2s infinite;
+        }
+
+        .btn-primary:hover {
+            background-color: transparent;
+            color: var(--terracotta);
+            animation: none;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-light);
+            border: 2px solid var(--text-light);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--text-light);
+            color: var(--text-dark);
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(200, 121, 65, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(200, 121, 65, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(200, 121, 65, 0); }
+        }
+
+        /* --- ORGANIC CONTENT FLOW --- */
+        .story-flow {
+            padding: 6rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .flow-block {
+            display: flex;
+            align-items: center;
+            gap: clamp(3rem, 6vw, 5rem);
+            margin-bottom: clamp(5rem, 10vw, 8rem);
+        }
+
+        .flow-block:last-child {
+            margin-bottom: 2rem;
+        }
+
+        .flow-block.reverse {
+            flex-direction: row-reverse;
+        }
+
+        .flow-text {
+            flex: 1;
+            position: relative;
+        }
+
+        .flow-text h2 {
+            font-family: var(--font-heading);
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: var(--teal);
+        }
+
+        .flow-text p {
+            font-size: 1.05rem;
+            color: #4A4A4A;
+            margin-bottom: 1.2rem;
+        }
+
+        .flow-text .script-overlay {
+            position: absolute;
+            top: -30px;
+            left: -20px;
+            font-family: var(--font-accent);
+            font-size: clamp(4rem, 8vw, 6rem);
+            color: rgba(200, 121, 65, 0.12);
+            z-index: -1;
+            white-space: nowrap;
+        }
+
+        .flow-image {
+            flex: 1.2;
+            position: relative;
+        }
+
+        .flow-image img {
+            width: 100%;
+            border-radius: 40px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            object-fit: cover;
+            max-height: 600px;
+        }
+
+        .flow-image .floating-img {
+            position: absolute;
+            width: 45%;
+            bottom: -30px;
+            left: -30px;
+            border-radius: 20px;
+            border: 10px solid var(--cream);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .flow-image .floating-img:hover {
+            transform: translateY(-10px) rotate(-3deg) scale(1.05);
+        }
+
+        .flow-block.reverse .floating-img {
+            left: auto;
+            right: -30px;
+            bottom: -30px;
+        }
+
+        /* --- IMMERSIVE COLLAGE SECTION --- */
+        .vibe-collage {
+            padding: 5rem 5% 6rem;
+            background-color: #F8F1EA;
+            position: relative;
+        }
+
+        .collage-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .collage-header h2 {
+            font-family: var(--font-heading);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            color: var(--terracotta);
+        }
+
+        .collage-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .collage-item {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+            transform: translateZ(0);
+        }
+
+        .collage-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .collage-item:hover img {
+            transform: scale(1.06) translateZ(0);
+        }
+
+        .item-1 { grid-column: 1 / 8; height: 450px; }
+        .item-2 { grid-column: 8 / 13; height: 450px; }
+        .item-3 { grid-column: 1 / 6; height: 350px; margin-top: -40px; z-index: 2; }
+        .item-4 { grid-column: 6 / 13; height: 500px; }
+
+        /* --- CUSTOMER REVIEWS SECTION --- */
+        .reviews-section {
+            padding: 8rem 5% 6rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .reviews-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .reviews-header h2 {
+            font-family: var(--font-heading);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            color: var(--teal);
+        }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .review-card {
+            background: #fff;
+            padding: 3rem 2rem 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            position: relative;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .review-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+        }
+
+        .quote-icon {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            font-family: var(--font-heading);
+            font-size: 5rem;
+            color: rgba(200, 121, 65, 0.15); /* Soft terracotta */
+            line-height: 1;
+        }
+
+        .review-card p {
+            font-size: 1.05rem;
+            color: #4A4A4A;
+            font-style: italic;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+            line-height: 1.8;
+        }
+
+        .review-source {
+            text-align: right;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .review-source a {
+            color: var(--terracotta);
+            text-decoration: none;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .review-source a:hover {
+            color: var(--teal);
+        }
+
+        .review-source a::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background-color: var(--teal);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .review-source a:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* --- FOOTER / VISIT US --- */
+        footer {
+            background-color: var(--teal);
+            color: var(--cream);
+            padding: 5rem 5% 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        footer .script-bg {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-accent);
+            font-size: clamp(5rem, 12vw, 10rem);
+            color: rgba(254, 249, 243, 0.03);
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .contact-details {
+            font-family: var(--font-heading);
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            max-width: 600px;
+            margin: 0 auto 1rem;
+            line-height: 1.8;
+            position: relative;
+            z-index: 2;
+        }
+
+        .info-block {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border-radius: 10px;
+            transition: all 0.4s ease;
+            background: rgba(255,255,255,0);
+        }
+
+        .info-block:hover {
+            background: rgba(255,255,255,0.04);
+            transform: translateY(-3px);
+        }
+
+        .contact-details span {
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--mustard);
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .address-link {
+            color: var(--cream);
+            text-decoration: none;
+            position: relative;
+            display: inline-block;
+            transition: color 0.3s ease;
+        }
+
+        .address-link:hover {
+            color: #fff;
+        }
+
+        .address-link::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            transform: scaleX(0);
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background-color: var(--mustard);
+            transform-origin: bottom right;
+            transition: transform 0.4s cubic-bezier(0.86, 0, 0.07, 1);
+        }
+
+        .address-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+        
+        /* Reservation Section */
+        .reservation-action {
+            position: relative;
+            z-index: 2;
+            margin-top: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Instagram Social Link */
+        .social-links {
+            position: relative;
+            z-index: 2;
+            margin-top: 1rem;
+        }
+
+        .ig-link {
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--mustard);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(233, 196, 106, 0.3);
+        }
+
+        .ig-link:hover {
+            background-color: rgba(233, 196, 106, 0.1);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .footer-logo {
+            font-family: var(--font-accent);
+            font-size: 2.5rem;
+            color: var(--terracotta);
+            margin-top: 3rem;
+            display: inline-block;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-logo:hover {
+            transform: scale(1.1) rotate(-3deg);
+        }
+
+        /* --- MOBILE OPTIMIZATION --- */
+        @media (max-width: 900px) {
+            .nav-links { display: none; }
+            .menu-toggle { display: flex; }
+
+            .flow-block, .flow-block.reverse {
+                flex-direction: column;
+                text-align: center;
+                gap: 2rem;
+            }
+
+            .flow-text .script-overlay {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .flow-image .floating-img {
+                display: none; 
+            }
+
+            .flow-image img {
+                border-radius: 20px;
+            }
+
+            .item-1, .item-2, .item-3, .item-4 {
+                grid-column: 1 / -1;
+                height: 300px;
+                margin-top: 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-btn { 
+                display: block; 
+                margin: 1rem auto; 
+                width: 80%; 
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="navbar">
+        <a href="#" class="logo">
+            <img src="Screenshot 2026-04-16 164413.png" alt="Peddler's Cafe Logo">
+        </a>
+        
+        <ul class="nav-links">
+            <li><a href="#story">Our Story</a></li>
+            <li><a href="#vibe">The Vibe</a></li>
+            <li><a href="#visit">Visit Us</a></li>
+        </ul>
+
+        <div class="menu-toggle" id="mobile-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <div class="mobile-nav" id="mobile-menu">
+        <a href="#story" class="mobile-link">Our Story</a>
+        <a href="#vibe" class="mobile-link">The Vibe</a>
+        <a href="#visit" class="mobile-link">Visit Us</a>
+    </div>
+
+    <header class="hero">
+        <div class="hero-bg" id="parallax-bg">
+            <video autoplay loop muted playsinline class="hero-video">
+                <source src="Video-547.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div class="hero-overlay"></div>
+        </div>
+        
+        <div class="hero-text reveal">
+            <h1>A Moment of Peace</h1>
+            <span class="accent">in the heart of Lucknow</span>
+            <div>
+                <a href="#story" class="hero-btn btn-primary">Discover</a>
+                <a href="#visit" class="hero-btn btn-secondary">Visit Us</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="story-flow" id="story">
+        
+        <div class="flow-block reveal">
+            <div class="flow-text">
+                <div class="script-overlay">Welcome</div>
+                <h2>Where comfort meets<br>exceptional flavor.</h2>
+                <p>Step away from the bustling streets of Lucknow and into a space designed for relaxation. Whether you're catching up with old friends, getting lost in a good book, or seeking a spark of creativity, our cafe is your personal sanctuary.</p>
+                <p>Surrounded by warm tones, soft lighting, and an ambience that feels like home.</p>
+            </div>
+            <div class="flow-image">
+                <img src="cafe 2.webp" alt="Cozy Cafe Corner">
+                <img src="pizza.webp" alt="Fresh Pizza" class="floating-img">
+            </div>
+        </div>
+
+        <div class="flow-block reverse reveal">
+            <div class="flow-text">
+                <div class="script-overlay">Indulge</div>
+                <h2>A feast for your eyes<br>and your soul.</h2>
+                <p>Every dish we serve is a labor of love. From our rich, comforting pastas to indulgent desserts that melt in your mouth, our continental spread is crafted to make every bite memorable.</p>
+                <p>Pair your meal with our signature coffees, brewed perfectly to complement your relaxing afternoon.</p>
+            </div>
+            <div class="flow-image">
+                <img src="Copyright+Mamma+Knows+East+-+Peddler+Cafe,+Nunawading-07635.webp" alt="Delicious Food">
+            </div>
+        </div>
+
+    </main>
+
+    <section class="vibe-collage" id="vibe">
+        <div class="collage-header reveal">
+            <h2>The Atmosphere</h2>
+        </div>
+        <div class="collage-grid">
+            <div class="collage-item item-1 reveal">
+                <img src="fa7b62e2-9712-43b4-a423-c8c9b626ebd1_20240830T070050218.webp" alt="Cafe Interior">
+            </div>
+            <div class="collage-item item-2 reveal">
+                <img src="2022-03-15.webp" alt="Graffiti Wall">
+            </div>
+            <div class="collage-item item-3 reveal">
+                <img src="cafe.webp" alt="Cafe Counter">
+            </div>
+            <div class="collage-item item-4 reveal">
+                <img src="people.webp" alt="People at the Cafe">
+            </div>
+        </div>
+    </section>
+
+    <section class="reviews-section">
+        <div class="reviews-header reveal">
+            <h2>What They Say</h2>
+        </div>
+        <div class="reviews-grid">
+            <div class="review-card reveal">
+                <div class="quote-icon">"</div>
+                <p>“The Peddler’s Café offers a delightful dining experience with cozy interiors, efficient service, and food that consistently delivers on taste.”</p>
+                <div class="review-source">
+                    - via <a href="https://wanderlog.com/place/details/1408299/the-peddlers-cafe" target="_blank">Wanderlog</a>
+                </div>
+            </div>
+            
+            <div class="review-card reveal">
+                <div class="quote-icon">"</div>
+                <p>“A charming café perfect for both casual hangouts and quiet work sessions, with a warm vibe and consistently great food.”</p>
+                <div class="review-source">
+                    - via <a href="https://wanderlog.com/place/details/1408299/the-peddlers-cafe" target="_blank">Wanderlog</a>
+                </div>
+            </div>
+            
+            <div class="review-card reveal">
+                <div class="quote-icon">"</div>
+                <p>“Visited after multiple recommendations, loved the vibe and the food, definitely a place worth coming back to.”</p>
+                <div class="review-source">
+                    - via <a href="https://www.reddit.com/r/lucknow/comments/1o0ntcp/the_peddlers_cafe/" target="_blank">Reddit</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="visit">
+        <div class="script-bg">Visit Us Today</div>
+        
+        <div class="contact-details reveal">
+            <div class="info-block">
+                <span>Find Us</span>
+                <a href="https://maps.app.goo.gl/LC78eKn1C15sidKF9" target="_blank" class="address-link">
+                    17, 1, Madan Mohan Malviya Marg, Parehta,<br>
+                    Gokhale Vihar, Butler Colony,<br>
+                    Lucknow, Uttar Pradesh 226001
+                </a>
+            </div>
+            
+            <div class="info-block">
+                <span>Call Us</span>
+                <a href="tel:05224955400" class="address-link">
+                    0522 495 5400
+                </a>
+            </div>
+            
+            <div class="info-block">
+                <span>Hours</span>
+                Monday - Sunday <br> 11:30 AM - 3:00 AM
+            </div>
+        </div>
+        
+        <div class="reservation-action reveal">
+            <a href="https://www.google.com/maps/reserve/v/dine/c/vBwh0nl-B90?source=pa&opi=89978449&hl=en-IN&gei=JsLgadulGNi5seMP5uvR0Ak&sourceurl=https://www.google.com/search?q%3Dpeddlers%2Bcafe%26oq%3Dpeddlers%2B%26pf%3Dcs%26sourceid%3Dchrome%26ie%3DUTF-8" target="_blank" class="hero-btn btn-primary" style="animation: none;">Reserve Your Table</a>
+        </div>
+
+        <div class="social-links reveal">
+            <a href="https://www.instagram.com/thepeddlersofficial/" target="_blank" class="ig-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.036 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"/>
+                </svg>
+                Follow The Peddlers
+            </a>
+        </div>
+        
+        <div class="footer-logo">Peddler's Cafe</div>
+    </footer>
+
+    <script>
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        mobileToggle.addEventListener('click', () => {
+            mobileToggle.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+        });
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileToggle.classList.remove('active');
+                mobileMenu.classList.remove('active');
+            });
+        });
+
+        const nav = document.getElementById('navbar');
+        const parallaxBg = document.getElementById('parallax-bg');
+        let lastKnownScrollPosition = 0;
+        let ticking = false;
+
+        function updateOnScroll(scrollPos) {
+            if (scrollPos > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+            
+            if (scrollPos < window.innerHeight) {
+                parallaxBg.style.transform = `translate3d(0, ${scrollPos * 0.4}px, 0)`;
+            }
+        }
+
+        window.addEventListener('scroll', () => {
+            lastKnownScrollPosition = window.scrollY;
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    updateOnScroll(lastKnownScrollPosition);
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealOptions = {
+            threshold: 0.1, 
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const revealOnScroll = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add('active');
+                observer.unobserve(entry.target); 
+            });
+        }, revealOptions);
+
+        revealElements.forEach(el => {
+            revealOnScroll.observe(el);
+        });
+    </script>
+</body>
+</html>
